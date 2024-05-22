@@ -1,5 +1,8 @@
 package main;
 
+import entity.Player;
+import tile.TileManager;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -7,20 +10,24 @@ public class Panel extends JPanel implements Runnable{
     final int originalTileSize = 16;
     final int scale = 3;
 
-    final int tileSize = originalTileSize * scale;
-    final int maxScreenCols = 16;
-    final int maxScreenRows = 12;
-    final int screenWidth = tileSize * maxScreenCols;
-    final int screenHeight = tileSize * maxScreenRows;
+    public final int tileSize = originalTileSize * scale;
+    public final int maxScreenCols = 16;
+    public final int maxScreenRows = 12;
+    public final int screenWidth = tileSize * maxScreenCols;
+    public final int screenHeight = tileSize * maxScreenRows;
+
+    public final int maxWorldCol = 50;
+    public final int maxWorldRow = 50;
+    public final int worldWidth = tileSize * maxWorldCol;
+    public final int worldHeight = tileSize * maxWorldRow;
 
     int FPS = 60;
 
+    TileManager tileManager = new TileManager(this);
     KeyHandler keyHandler = new KeyHandler();
     Thread gameThread;
-
-    int playerX = 100;
-    int playerY = 100;
-    int playerSpeed = 4;
+    public CollisionChecker checker = new CollisionChecker(this);
+    public Player player = new Player(this, keyHandler);
 
     public Panel() {
         this.setPreferredSize(new Dimension(screenWidth, screenHeight));
@@ -67,25 +74,16 @@ public class Panel extends JPanel implements Runnable{
         }
     }
     public void update() {
-        if (keyHandler.upPressed == true) {
-            playerY -= playerSpeed;
-        }
-        if (keyHandler.downPressed == true) {
-            playerY += playerSpeed;
-        }
-        if (keyHandler.rightPressed == true) {
-            playerX += playerSpeed;
-        }
-        if (keyHandler.leftPressed == true) {
-            playerX -= playerSpeed;
-        }
+        player.update();
     }
     public void paintComponent(Graphics graphics) {
         super.paintComponent(graphics);
 
         Graphics2D graphics2 = (Graphics2D)graphics;
-        graphics2.setColor(Color.white);
-        graphics2.fillRect(playerX, playerY, tileSize, tileSize);
+
+        tileManager.draw(graphics2);
+        player.draw(graphics2);
+
         graphics2.dispose();
     }
 }
