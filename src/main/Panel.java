@@ -76,7 +76,6 @@ public class Panel extends JPanel implements Runnable{
             }
 
             if (timer >= 1000000000) {
-                System.out.println("FPS: " + drawCount);
                 timer = 0;
                 drawCount = 0;
             }

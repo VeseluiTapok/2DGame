@@ -66,7 +66,63 @@ public class CollisionChecker {
 
         for (int i = 0; i < panel.superObject.length; i++) {
             if (panel.superObject[i] != null) {
-                //Get
+                //Get entity's solid area position
+                entity.solidArea.x = entity.worldX + entity.solidArea.x;
+                entity.solidArea.y = entity.worldY + entity.solidArea.y;
+                //Get the object's solid area position
+                panel.superObject[i].solidArea.x = panel.superObject[i].worldX + panel.superObject[i].solidArea.x;
+                panel.superObject[i].solidArea.y = panel.superObject[i].worldY + panel.superObject[i].solidArea.y;
+
+                switch (entity.direction) {
+                    case "up":
+                        entity.solidArea.y -= entity.speed;
+                        if (entity.solidArea.intersects(panel.superObject[i].solidArea)) {
+                            if (panel.superObject[i].collision == true) {
+                                entity.collisionOn = true;
+                            }
+                            if (player == true) {
+                                index = i;
+                            }
+                        }
+                        break;
+                    case "down":
+                        entity.solidArea.y += entity.speed;
+                        if (entity.solidArea.intersects(panel.superObject[i].solidArea)) {
+                            if (panel.superObject[i].collision == true) {
+                                entity.collisionOn = true;
+                            }
+                            if (player == true) {
+                                index = i;
+                            }
+                        }
+                        break;
+                    case "right":
+                        entity.solidArea.x += entity.speed;
+                        if (entity.solidArea.intersects(panel.superObject[i].solidArea)) {
+                            if (panel.superObject[i].collision == true) {
+                                entity.collisionOn = true;
+                            }
+                            if (player == true) {
+                                index = i;
+                            }
+                        }
+                        break;
+                    case "left":
+                        entity.solidArea.x -= entity.speed;
+                        if (entity.solidArea.intersects(panel.superObject[i].solidArea)) {
+                            if (panel.superObject[i].collision == true) {
+                                entity.collisionOn = true;
+                            }
+                            if (player == true) {
+                                index = i;
+                            }
+                        }
+                        break;
+                }
+                entity.solidArea.x = entity.solidAreaDefaultX;
+                entity.solidArea.y = entity.solidAreaDefaultY;
+                panel.superObject[i].solidArea.x = panel.superObject[i].solidAreaDefaultX;
+                panel.superObject[i].solidArea.y = panel.superObject[i].solidAreaDefaultY;
             }
         }
 
