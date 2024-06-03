@@ -1,13 +1,22 @@
 package object;
 
+import main.Panel;
+
 import javax.imageio.ImageIO;
 import java.io.IOException;
 
 public class OBJ_GrassDoor extends SuperObject{
-    public OBJ_GrassDoor() {
+
+    Panel panel;
+
+    public OBJ_GrassDoor(Panel panel) {
+        this.panel = panel;
+
         name = "GrassDoor";
         try {
-            image = ImageIO.read(getClass().getResourceAsStream("/object/graasDoor.png"));
+            image1 = ImageIO.read(getClass().getResourceAsStream("/object/graasDoor.png"));
+            utilityTool.scaleImage(image1, panel.tileSize, panel.tileSize);
+
         }catch (IOException e) {
             e.printStackTrace();
         }

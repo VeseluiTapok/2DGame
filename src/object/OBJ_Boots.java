@@ -5,16 +5,16 @@ import main.Panel;
 import javax.imageio.ImageIO;
 import java.io.IOException;
 
-public class OBJ_Chest extends SuperObject {
+public class OBJ_Boots extends SuperObject{
 
     Panel panel;
 
-    public OBJ_Chest(Panel panel) {
+    public OBJ_Boots(Panel panel) {
         this.panel = panel;
 
-        name = "Chest";
+        name = "Boots";
         try {
-            image1 = ImageIO.read(getClass().getResourceAsStream("/object/Chest.png"));
+            image1 = ImageIO.read(getClass().getResourceAsStream("/object/boots.png"));
             utilityTool.scaleImage(image1, panel.tileSize, panel.tileSize);
 
         }catch (IOException e) {
