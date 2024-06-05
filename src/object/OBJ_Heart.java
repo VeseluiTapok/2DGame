@@ -1,28 +1,19 @@
 package object;
 
+import entity.Entity;
 import main.Panel;
 
 import javax.imageio.ImageIO;
 import java.io.IOException;
 
-public class OBJ_Heart extends SuperObject{
-
-    Panel panel;
+public class OBJ_Heart extends Entity {
 
     public OBJ_Heart(Panel panel) {
-        this.panel = panel;
+        super(panel);
 
         name = "Heart";
-        try {
-            image1 = ImageIO.read(getClass().getResourceAsStream("/object/heart_full.png"));
-            image2 = ImageIO.read(getClass().getResourceAsStream("/object/heart_half.png"));
-            image3 = ImageIO.read(getClass().getResourceAsStream("/object/heart_blank.png"));
-            utilityTool.scaleImage(image1, panel.tileSize, panel.tileSize);
-            utilityTool.scaleImage(image2, panel.tileSize, panel.tileSize);
-            utilityTool.scaleImage(image3, panel.tileSize, panel.tileSize);
-
-        }catch (IOException e) {
-            e.printStackTrace();
-        }
+        image1 = setup("/object/heart_full", panel.tileSize, panel.tileSize);
+        image2 = setup("/object/heart_half", panel.tileSize, panel.tileSize);
+        image3 = setup("/object/heart_blank", panel.tileSize, panel.tileSize);
     }
 }

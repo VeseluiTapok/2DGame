@@ -40,6 +40,7 @@ public class TileManager {
 
         setup(34, "grass01", false);
         setup(35, "tree", true);
+        setup(44, "blockHole", false);
 
         //House
         setup(36, "earth", false);

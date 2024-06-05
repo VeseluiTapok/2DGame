@@ -1,15 +1,18 @@
 package main;
 
+import entity.Entity;
+import object.OBJ_Heart;
+
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
-import java.text.DecimalFormat;
 
 public class UI {
     Panel panel;
     Graphics2D graphics2D;
-    Font purisaB;
-    Font MaruM;
+    Font purisaB, MaruM;
+    BufferedImage heartFull, heartHalf, heartBlank, Hole;
     public boolean messageOn = false;
     public String message = "";
     int messageCounter = 0;
@@ -30,6 +33,12 @@ public class UI {
         } catch (IOException e) {
            e.printStackTrace();
         }
+
+        //Create hud object
+        Entity heart = new OBJ_Heart(panel);
+        heartFull = heart.image1;
+        heartHalf = heart.image2;
+        heartBlank = heart.image3;
     }
 
     public void showMessage(String text) {
@@ -51,17 +60,48 @@ public class UI {
         }
         //Play state
         if (panel.gameState == panel.playState) {
-            // Do play state
+            drawPlayerHP();
         }
 
         //Pause state
         if (panel.gameState == panel.pauseState) {
+            drawPlayerHP();
             drawPauseScreen();
         }
 
         //Dialogue state
         if (panel.gameState == panel.dialogueState) {
+            drawPlayerHP();
             drawDialogueScreen();
+        }
+    }
+
+    public void drawPlayerHP() {
+        int x = panel.tileSize/4;
+        int y = panel.tileSize/4;
+        int i = 0;
+
+        //DRAW MAX HP
+        while (i < panel.player.maxHP/2) {
+            graphics2D.drawImage(heartBlank, x, y, null);
+            i++;
+            x += panel.tileSize;
+        }
+
+        //RESET
+        x = panel.tileSize/4;
+        y = panel.tileSize/4;
+        i = 0;
+
+        //DRAW CURRENT HP
+        while (i < panel.player.currentHP) {
+            graphics2D.drawImage(heartHalf, x, y, null);
+            i++;
+            if (i < panel.player.currentHP) {
+                graphics2D.drawImage(heartFull, x, y, null);
+            }
+            i++;
+            x += panel.tileSize;
         }
     }
 

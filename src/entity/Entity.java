@@ -10,23 +10,34 @@ import java.io.IOException;
 
 public class Entity {
     Panel panel;
-
-    public int worldX, worldY;
-    public int speed;
-
     public BufferedImage up1, up2, down1, down2, right1, right2, left1, left2;
-    public String direction;
-
-    public int spriteNum = 1;
-    public int spriteCounter = 0;
+    public BufferedImage attackUp1, attackUp2, attackDown1, attackDown2,
+            attackRight1, attackRight2, attackLeft1, attackLeft2;
     public Rectangle solidArea = new Rectangle(0, 0, 48, 48);
     public int solidAreaDefaultY, solidAreaDefaultX;
-    public boolean collisionOn = false;
-    public int updateLockCounter = 0;
     public String[] dialogues = new String[20];
+    public BufferedImage image1, image2, image3;
+    public boolean collision = false;
+
+    //STATE
+    public int worldX, worldY;
+    public int spriteNum = 1;
+    public String direction = "down";
+    public boolean collisionOn = false;
+    public boolean invincible = false;
     int dialogueIndex = 0;
 
-    //CHARACTER STATUS
+    //COUNTER
+    public int spriteCounter = 0;
+    public int updateLockCounter = 0;
+    public int invincibleCounter = 0;
+
+    //CHARACTER ATTIBUTES
+    public String name;
+    public int type;
+    public int maxHP;
+    public int currentHP;
+    public int speed;
 
     public Entity(Panel panel) {
         this.panel = panel;
@@ -64,7 +75,17 @@ public class Entity {
         collisionOn = false;
         panel.checker.checkTile(this);
         panel.checker.checkObject(this, false);
-        panel.checker.checkPlayer(this);
+        panel.checker.checkEntity(this, panel.nps);
+        panel.checker.checkEntity(this, panel.monster);
+        boolean contactPlayer = panel.checker.checkPlayer(this);
+
+        if (this.type == 2 && contactPlayer == true) {
+            if (panel.player.invincible == false) {
+                //we can give damage
+                panel.player.currentHP -= 1;
+                panel.player.invincible = true;
+            }
+        }
 
         //If collision is false, NPS can move
         if (collisionOn == false) {
@@ -148,7 +169,7 @@ public class Entity {
         }
     }
 
-    public BufferedImage setup(String imagePath) {
+    public BufferedImage setup(String imagePath, int wight, int height) {
 
         UtilityTool utilityTool = new UtilityTool();
         BufferedImage image = null;
@@ -156,7 +177,7 @@ public class Entity {
         try {
 
             image = ImageIO.read(getClass().getResourceAsStream( imagePath +".png"));
-            image = utilityTool.scaleImage(image, panel.tileSize, panel.tileSize);
+            image = utilityTool.scaleImage(image, wight, height);
         }catch (IOException e) {
             e.printStackTrace();
         }

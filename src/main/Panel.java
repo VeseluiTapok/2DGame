@@ -2,11 +2,14 @@ package main;
 
 import entity.Entity;
 import entity.Player;
-import object.SuperObject;
 import tile.TileManager;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class Panel extends JPanel implements Runnable{
     final int originalTileSize = 16;
@@ -25,6 +28,7 @@ public class Panel extends JPanel implements Runnable{
 
     //FPS
     int FPS = 60;
+    public long timer = 0;
 
     //System
     TileManager tileManager = new TileManager(this);
@@ -34,12 +38,15 @@ public class Panel extends JPanel implements Runnable{
     public CollisionChecker checker = new CollisionChecker(this);
     public AssetSetter assetSetter = new AssetSetter(this);
     public UI ui = new UI(this);
+    public EventHandler eventHandler = new EventHandler(this);
     Thread gameThread;
 
     //Entity and object
     public Player player = new Player(this, keyHandler);
-    public SuperObject superObject[] = new SuperObject[10];
+    public Entity object[] = new Entity[10];
     public Entity nps[] = new Entity[10];
+    public Entity monster[] = new Entity[20];
+    ArrayList<Entity> entityList = new ArrayList<>();
 
     //Game State
     public int gameState;
@@ -59,6 +66,7 @@ public class Panel extends JPanel implements Runnable{
     public void setupGame() {
         assetSetter.setObject();
         assetSetter.setNPS();
+        assetSetter.setMonsters();
 
         gameState = titleState;
     }
@@ -71,10 +79,9 @@ public class Panel extends JPanel implements Runnable{
     @Override
     public void run() {
         double drawInterval = 1000000000 / FPS;
-        double delta = 0;
         long lastTime = System.nanoTime();
         long currentTime;
-        long timer = 0;
+        double delta = 0;
         int drawCount = 0;
 
         while (gameThread != null) {
@@ -92,10 +99,6 @@ public class Panel extends JPanel implements Runnable{
                 drawCount++;
             }
 
-            if (timer >= 1000000000) {
-                timer = 0;
-                drawCount = 0;
-            }
         }
     }
     public void update() {
@@ -106,6 +109,11 @@ public class Panel extends JPanel implements Runnable{
             for (int i = 0;i < nps.length; i++) {
                 if (nps[i] != null) {
                     nps[i].update();
+                }
+            }
+            for (int i = 0;i < monster.length; i++) {
+                if (monster[i] != null) {
+                    monster[i].update();
                 }
             }
         }
@@ -134,22 +142,43 @@ public class Panel extends JPanel implements Runnable{
             //TILE
             tileManager.draw(graphics2);
 
-            //OBJECT
-            for (int i = 0; i < superObject.length; i++) {
-                if (superObject[i] != null) {
-                    superObject[i].draw(graphics2, this);
-                }
-            }
+            //ADD ENTITIES TO THE LIST
+            entityList.add(player);
 
-            //NPS
             for (int i = 0; i < nps.length; i++) {
                 if (nps[i] != null) {
-                    nps[i].draw(graphics2);
+                    entityList.add(nps[i]);
                 }
             }
 
-            //PLAYER
-            player.draw(graphics2);
+            for (int i = 0; i < object.length; i++) {
+                if (object[i] != null) {
+                    entityList.add(object[i]);
+                }
+            }
+
+            for (int i = 0; i < monster.length; i++) {
+                if (monster[i] != null) {
+                    entityList.add(monster[i]);
+                }
+            }
+
+            //SORT
+            Collections.sort(entityList, new Comparator<Entity>() {
+                @Override
+                public int compare(Entity e1, Entity e2) {
+                    int result = Integer.compare(e1.worldY, e2.worldY);
+                    return result;
+                }
+            });
+
+            //DRAW ENTITIES
+            for (int i = 0; i < entityList.size(); i++) {
+                entityList.get(i).draw(graphics2);
+            }
+
+            //EMPTY ENTITY LIST
+            entityList.clear();
 
             //UI
             ui.draw(graphics2);
