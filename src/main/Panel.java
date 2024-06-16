@@ -7,7 +7,6 @@ import tile.TileManager;
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 
@@ -46,7 +45,8 @@ public class Panel extends JPanel implements Runnable{
     public Entity object[] = new Entity[10];
     public Entity nps[] = new Entity[10];
     public Entity monster[] = new Entity[20];
-    ArrayList<Entity> entityList = new ArrayList<>();
+    public ArrayList<Entity> projectileList = new ArrayList<>();
+    public ArrayList<Entity> entityList = new ArrayList<>();
 
     //Game State
     public int gameState;
@@ -54,6 +54,8 @@ public class Panel extends JPanel implements Runnable{
     public final int playState = 1;
     public final int pauseState = 2;
     public final int dialogueState = 3;
+    public final int characterState = 4;
+    public final int levelUpState = 5;
 
     public Panel() {
         this.setPreferredSize(new Dimension(screenWidth, screenHeight));
@@ -101,6 +103,7 @@ public class Panel extends JPanel implements Runnable{
 
         }
     }
+
     public void update() {
         if (gameState == playState) {
             //PLAYER
@@ -113,7 +116,23 @@ public class Panel extends JPanel implements Runnable{
             }
             for (int i = 0;i < monster.length; i++) {
                 if (monster[i] != null) {
-                    monster[i].update();
+                    if (monster[i].alive == true && monster[i].dying == false) {
+                        monster[i].update();
+                    }
+                    if (monster[i].alive == false) {
+                        monster[i].checkDrop();
+                        monster[i] = null;
+                    }
+                }
+            }
+            for (int i = 0;i < projectileList.size(); i++) {
+                if (projectileList.get(i) != null) {
+                    if (projectileList.get(i).alive == true) {
+                        projectileList.get(i).update();
+                    }
+                    if (projectileList.get(i).alive == false) {
+                        projectileList.remove(i);
+                    }
                 }
             }
         }
@@ -128,7 +147,7 @@ public class Panel extends JPanel implements Runnable{
 
         //DEBUG
         long drawStart = 0;
-        if (keyHandler.checkDrawTime == true) {
+        if (keyHandler.showDebugText == true) {
             drawStart = System.nanoTime();
         }
 
@@ -145,21 +164,31 @@ public class Panel extends JPanel implements Runnable{
             //ADD ENTITIES TO THE LIST
             entityList.add(player);
 
+            //NPS
             for (int i = 0; i < nps.length; i++) {
                 if (nps[i] != null) {
                     entityList.add(nps[i]);
                 }
             }
 
+            //OBJECT
             for (int i = 0; i < object.length; i++) {
                 if (object[i] != null) {
                     entityList.add(object[i]);
                 }
             }
 
+            //MONSTER
             for (int i = 0; i < monster.length; i++) {
                 if (monster[i] != null) {
                     entityList.add(monster[i]);
+                }
+            }
+
+            //PROJECTILE
+            for (int i = 0; i < projectileList.size(); i++) {
+                if (projectileList.get(i) != null) {
+                    entityList.add(projectileList.get(i));
                 }
             }
 
@@ -185,12 +214,26 @@ public class Panel extends JPanel implements Runnable{
         }
 
         //DEBUG
-        if (keyHandler.checkDrawTime == true) {
+        if (keyHandler.showDebugText == true) {
             long drawEnd = System.nanoTime();
             long passed = drawEnd - drawStart;
+
+            graphics2.setFont(new Font("Arial", Font.PLAIN,  20));
+            graphics2.setColor(Color.white);
+            int x = 10;
+            int y = 420;
+            int lineHeight = 20;
+
+            graphics2.drawString("X " + player.worldX, x, y);
+            y += lineHeight;
+            graphics2.drawString("Y "+ player.worldY, x, y);
+            y += lineHeight;
+            graphics2.drawString("Col " + (player.worldX + player.solidArea.x)/tileSize, x, y);
+            y += lineHeight;
+            graphics2.drawString("Row "+ (player.worldY + player.solidArea.y)/tileSize, x, y);
+
             graphics2.setColor(Color.white);
             graphics2.drawString("Draw time: " + passed, 10, 400);
-            System.out.println("Draw time: " + passed);
         }
 
         graphics2.dispose();

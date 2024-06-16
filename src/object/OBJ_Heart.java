@@ -12,8 +12,8 @@ public class OBJ_Heart extends Entity {
         super(panel);
 
         name = "Heart";
-        image1 = setup("/object/heart_full", panel.tileSize, panel.tileSize);
-        image2 = setup("/object/heart_half", panel.tileSize, panel.tileSize);
-        image3 = setup("/object/heart_blank", panel.tileSize, panel.tileSize);
+        image1 = setup("/object/Heart/heart_full", panel.tileSize, panel.tileSize);
+        image2 = setup("/object/Heart/heart_half", panel.tileSize, panel.tileSize);
+        image3 = setup("/object/Heart/heart_blank", panel.tileSize, panel.tileSize);
     }
 }

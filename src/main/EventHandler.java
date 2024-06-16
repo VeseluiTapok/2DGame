@@ -63,7 +63,6 @@ public class EventHandler {
 
     public void damagePit(int gameState) {
         if (panel.timer >= 2000000000) {
-            System.out.println(panel.timer);
             panel.gameState = gameState;
             panel.ui.currentDialogue = "you fall into a hole!";
             panel.player.currentHP -= 1;
@@ -75,10 +74,8 @@ public class EventHandler {
 
         if (panel.keyHandler.enterPressed == true) {
             panel.gameState = gameState;
-            panel.ui.currentDialogue = "You drink tasty water! \nHP has been recovered";
-            if (panel.player.currentHP != panel.player.maxHP) {
-                panel.player.currentHP += 1;
-            }
+            panel.ui.currentDialogue = "You respawn all monsters";
+            panel.assetSetter.setMonsters();
         }
     }
 }
