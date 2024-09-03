@@ -1,12 +1,7 @@
 package entity;
 
 import main.Panel;
-import main.UtilityTool;
 
-import javax.imageio.ImageIO;
-import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
 import java.util.Random;
 
 public class NPS_OldMan extends Entity {
@@ -22,14 +17,14 @@ public class NPS_OldMan extends Entity {
     }
 
     public void getImage() {
-        up1 = setup("/NPS/oldman_up_1", panel.tileSize, panel.tileSize);
-        up2 = setup("/NPS/oldman_up_2", panel.tileSize, panel.tileSize);
-        down1 = setup("/NPS/oldman_down_1", panel.tileSize, panel.tileSize);
-        down2 = setup("/NPS/oldman_down_2", panel.tileSize, panel.tileSize);
-        right1 = setup("/NPS/oldman_right_1", panel.tileSize, panel.tileSize);
-        right2 = setup("/NPS/oldman_right_2", panel.tileSize, panel.tileSize);
-        left1 = setup("/NPS/oldman_left_1", panel.tileSize, panel.tileSize);
-        left2 = setup("/NPS/oldman_left_2", panel.tileSize, panel.tileSize);
+        up1 = setup("/object/NPS/oldman_up_1", panel.tileSize, panel.tileSize);
+        up2 = setup("/object/NPS/oldman_up_2", panel.tileSize, panel.tileSize);
+        down1 = setup("/object/NPS/oldman_down_1", panel.tileSize, panel.tileSize);
+        down2 = setup("/object/NPS/oldman_down_2", panel.tileSize, panel.tileSize);
+        right1 = setup("/object/NPS/oldman_right_1", panel.tileSize, panel.tileSize);
+        right2 = setup("/object/NPS/oldman_right_2", panel.tileSize, panel.tileSize);
+        left1 = setup("/object/NPS/oldman_left_1", panel.tileSize, panel.tileSize);
+        left2 = setup("/object/NPS/oldman_left_2", panel.tileSize, panel.tileSize);
     }
 
     public void setDialogue() {
@@ -40,27 +35,36 @@ public class NPS_OldMan extends Entity {
     }
 
     public void setAction() {
-        updateLockCounter++;
+        if (onPath) {
+            int goalCol = 10;
+            int goalRow = 9;
 
-        if (updateLockCounter >= 120) {
-            Random random = new Random();
-            int i = random.nextInt(100) + 1;
+            searchPath(goalCol, goalRow);
+        }
+        else {
+            updateLockCounter++;
 
-            if (i <= 25) {
-                direction = "up";
-            } else if (i > 25 && i <= 50) {
-                direction = "down";
-            } else if (i > 50 && i <= 75) {
-                direction = "left";
-            } else if (i > 75 && i <= 100) {
-                direction = "right";
+            if (updateLockCounter >= 120) {
+                Random random = new Random();
+                int i = random.nextInt(100) + 1;
+
+                if (i <= 25) {
+                    direction = "up";
+                } else if (i > 25 && i <= 50) {
+                    direction = "down";
+                } else if (i > 50 && i <= 75) {
+                    direction = "left";
+                } else if (i > 75 && i <= 100) {
+                    direction = "right";
+                }
+                updateLockCounter = 0;
             }
-            updateLockCounter = 0;
         }
     }
 
     public void speak() {
-
         super.speak();
+
+        onPath = true;
     }
 }

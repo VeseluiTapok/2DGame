@@ -7,6 +7,7 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class Entity {
     Panel panel;
@@ -35,6 +36,7 @@ public class Entity {
     public boolean dying = false;
     boolean HpBarOn = false;
     public boolean readyToShot = false;
+    public boolean onPath = false;
 
     //COUNTER
     public int spriteCounter = 0;
@@ -70,11 +72,14 @@ public class Entity {
     public Projectile projectile;
 
     //ITEM ATTRIBUTES
+    public ArrayList<Entity> inventory = new ArrayList<>();
+    public final int maxInventorySize = 20;
     public int value;
     public int attackValue;
     public int defenceValue;
     public String description = "";
     public int useCost;
+    public int price;
 
     //TYPE
     public int type;
@@ -125,31 +130,70 @@ public class Entity {
     public void checkDrop() {}
 
     public void dropItem(Entity droppedItem) {
-        for (int index = 0; index < panel.object.length; index++) {
-            if (panel.object[index] != null) {
-                panel.object[index] = droppedItem;
-                panel.object[index].worldX = worldX;
-                panel.object[index].worldY = worldY;
+        for (int index = 0; index < panel.object[1].length; index++) {
+            if (panel.object[panel.currentMap][index] != null) {
+                panel.object[panel.currentMap][index] = droppedItem;
+                panel.object[panel.currentMap][index].worldX = worldX;
+                panel.object[panel.currentMap][index].worldY = worldY;
                 break;
             }
+        }
+    }
+
+    public Color getParticleColor() {
+        Color color = null;
+        return color;
+    }
+
+    public int getParticleSize() {
+        int size = 0;
+        return size;
+    }
+
+    public int getParticleSpeed() {
+        int speed = 0;
+        return speed;
+    }
+
+    public int getParticleMaxHP() {
+        int maxHP = 0;
+        return maxHP;
+    }
+
+    public void generateParticle(Entity generator, Entity target) {
+        Color color = generator.getParticleColor();
+        int size = generator.getParticleSize();
+        int speed = generator.getParticleSpeed();
+        int maxHP = generator.getParticleMaxHP();
+
+        Particle p1 = new Particle(panel, target, color, size, speed, maxHP, -2, -1);
+        Particle p2 = new Particle(panel, target, color, size, speed, maxHP, 2, -1);
+        Particle p3 = new Particle(panel, target, color, size, speed, maxHP, -2, 1);
+        Particle p4 = new Particle(panel, target, color, size, speed, maxHP, 2, 1);
+        panel.particleList.add(p1);
+        panel.particleList.add(p2);
+        panel.particleList.add(p3);
+        panel.particleList.add(p4);
+    }
+
+    public void checkCollision() {
+        collisionOn = false;
+        panel.checker.checkTile(this);
+        panel.checker.checkObject(this, false);
+        panel.checker.checkEntity(this, panel.nps);
+        panel.checker.checkEntity(this, panel.monster);
+        panel.checker.checkEntity(this, panel.interactiveTile);
+        boolean contactPlayer = panel.checker.checkPlayer(this);
+
+        if (this.type == typeMonster && contactPlayer == true) {
+            damagePlayer(attack);
         }
     }
 
     public void update() {
 
         setAction();
-
-        collisionOn = false;
-        panel.checker.checkTile(this);
-        panel.checker.checkObject(this, false);
-        panel.checker.checkEntity(this, panel.nps);
-        panel.checker.checkEntity(this, panel.monster);
-        boolean contactPlayer = panel.checker.checkPlayer(this);
-
-        if (this.type == typeMonster && contactPlayer == true) {
-
-            damagePlayer(attack);
-        }
+        checkCollision();
 
         //If collision is false, NPS can move
         if (collisionOn == false) {
@@ -162,7 +206,7 @@ public class Entity {
         }
 
         spriteCounter++;
-        if (spriteCounter > 12) {
+        if (spriteCounter > 24) {
             if (spriteNum == 1) {
                 spriteNum = 2;
             } else if (spriteNum == 2) {
@@ -317,5 +361,71 @@ public class Entity {
         }
 
         return direction;
+    }
+
+    public void searchPath(int goalCol, int goalRow) {
+        int startCol = (worldX + solidArea.x)/ panel.tileSize;
+        int startRow = (worldY + solidArea.y)/ panel.tileSize;
+
+        panel.pathFinder.setNodes(startCol, startRow, goalCol, goalRow, this);
+
+        if (panel.pathFinder.search()) {
+            int nextX = panel.pathFinder.pathList.get(0).col* panel.tileSize;
+            int nextY = panel.pathFinder.pathList.get(0).row* panel.tileSize;
+
+            int enLeftX = worldX + solidArea.x;
+            int enRightX = worldX + solidArea.x + solidArea.width;
+            int enTopY = worldY + solidArea.y;
+            int enButtonY = worldY + solidArea.y + solidArea.height;
+
+            if (enTopY > nextY && enLeftX >= nextX && enRightX < nextX + panel.tileSize) {
+                direction = "up";
+            }
+            else if (enTopY < nextY && enLeftX >= nextX && enRightX < nextX + panel.tileSize) {
+                direction = "down";
+            }
+            else if (enTopY >= nextY && enButtonY < nextY + panel.tileSize) {
+                if (enLeftX > nextX) {
+                    direction = "left";
+                }
+                if (enLeftX < nextX) {
+                    direction = "right";
+                }
+            }
+            else if (enTopY > nextY && enLeftX > nextX) {
+                direction = "up";
+                checkCollision();
+                if (collisionOn) {
+                    direction = "left";
+                }
+            }
+            else if (enTopY > nextY && enLeftX < nextX) {
+                direction = "up";
+                checkCollision();
+                if (collisionOn) {
+                    direction = "right";
+                }
+            }
+            else if (enTopY < nextY && enLeftX > nextX) {
+                direction = "down";
+                checkCollision();
+                if (collisionOn) {
+                    direction = "left";
+                }
+            }
+            else if (enTopY < nextY && enLeftX < nextX) {
+                direction = "down";
+                checkCollision();
+                if (collisionOn) {
+                    direction = "right";
+                }
+            }
+
+            int nextCol = panel.pathFinder.pathList.get(0).col;
+            int nextRow = panel.pathFinder.pathList.get(0).row;
+            if (nextCol == goalCol && nextRow == goalRow) {
+                onPath = false;
+            }
+        }
     }
 }

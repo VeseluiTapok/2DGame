@@ -7,6 +7,7 @@ import object.OBJ_Bronze_Coin;
 import object.OBJ_Dagger;
 import object.OBJ_Shield_Blue;
 
+import java.awt.*;
 import java.util.Random;
 
 public class MON_GreenSlime extends Entity {
@@ -37,6 +38,7 @@ public class MON_GreenSlime extends Entity {
 
         getImage();
     }
+
     public void getImage() {
         up1 = setup("/monsters/slime_default", panel.tileSize, panel.tileSize);
         up2 = setup("/monsters/slime_up", panel.tileSize, panel.tileSize);
@@ -49,23 +51,7 @@ public class MON_GreenSlime extends Entity {
     }
 
     public void setAction() {
-        updateLockCounter++;
-
-        if (updateLockCounter >= 120) {
-            Random random = new Random();
-            int i = random.nextInt(100) + 1;
-
-            if (i <= 25) {
-                direction = "up";
-            } else if (i > 25 && i <= 50) {
-                direction = "down";
-            } else if (i > 50 && i <= 75) {
-                direction = "left";
-            } else if (i > 75 && i <= 100) {
-                direction = "right";
-            }
-            updateLockCounter = 0;
-        }
+        direction = toPlayerDirection();
 
 //        int i = new Random().nextInt(100)+1;
 //        if (i > 99 && projectile.alive == false && shotAvailableCounter == 30) {
@@ -87,6 +73,7 @@ public class MON_GreenSlime extends Entity {
 //            shotAvailableCounter = 0;
 //        }
     }
+
     public void damageReaction() {
         updateLockCounter = 0;
         direction = oppositeDirection(panel.player.direction);
@@ -95,17 +82,55 @@ public class MON_GreenSlime extends Entity {
     public void checkDrop() {
 
         //CAST THE DIE
-        int i = new Random().nextInt(100)+1;
+        int dropNum = new Random().nextInt(100)+1;
 
         //SET THE MONSTER DROP
-        if (i < 50) {
+        if (dropNum < 50) {
             dropItem(new OBJ_Bronze_Coin(panel));
         }
-        if (i >= 50 && i < 80) {
+        if (dropNum >= 50 && dropNum < 80) {
             dropItem(new OBJ_Shield_Blue(panel));
         }
-        if (i >= 80 && i < 100) {
+        if (dropNum >= 80 && dropNum <= 100) {
             dropItem(new OBJ_Axe(panel));
         }
+    }
+
+    public Color getParticleColor() {
+        Color color = new Color(79, 198, 38);
+        return color;
+    }
+
+    public int getParticleSize() {
+        int size = 8;
+        return size;
+    }
+
+    public int getParticleSpeed() {
+        int speed = 1;
+        return speed;
+    }
+
+    public int getParticleMaxHP() {
+        int maxHP = 20;
+        return maxHP;
+    }
+
+    public String toPlayerDirection() {
+        String direction = "";
+//                if (worldX <= panel.player.worldX+8 && worldX >= panel.player.worldX-8) {
+//                    if (worldY < panel.player.worldY) {
+//                        direction = "down";
+//                    } else if (worldY > panel.player.worldY) {
+//                        direction = "up";
+//                    }
+//                }
+//                else if (worldX < panel.player.worldX+8) {
+//                    direction = "right";
+//                }
+//                else if (worldX > panel.player.worldX-8) {
+//                    direction = "left";
+//                }
+        return direction;
     }
 }

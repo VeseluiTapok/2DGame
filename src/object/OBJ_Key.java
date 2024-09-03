@@ -12,5 +12,6 @@ public class OBJ_Key extends Entity {
         name = "Key";
         down1 = setup("/object/key", panel.tileSize, panel.tileSize);
         description = "[" + name + "]" + "\nIt open a door...";
+        price = 10;
     }
 }

@@ -16,8 +16,6 @@ public class Player extends Entity{
     public final int screenX;
     public final int screenY;
     public int ExpRemainder = 0;
-    public ArrayList<Entity> inventory = new ArrayList<>();
-    public final int maxInventorySize = 20;
     Entity crystal = new OBJ_ManaCrystal(panel);
     Entity heart = new OBJ_Heart(panel);
     public BufferedImage manaImage = crystal.image2;
@@ -50,6 +48,8 @@ public class Player extends Entity{
     public void setDefaultValues() {
         worldX = panel.tileSize * 23;
         worldY = panel.tileSize * 21;
+//        worldX = panel.tileSize * 12;
+//        worldY = panel.tileSize * 11;
         speed = 4;
         direction = "down";
 
@@ -64,7 +64,7 @@ public class Player extends Entity{
         dexterity = 1;
         exp = 0;
         nextLevelExp = 5;
-        coin = 0;
+        coin = 500;
         currentWeapon = new OBJ_Sword_Normal(panel);
         currentShield = new OBJ_Shield_Wood(panel);
         strength1 = new OBJ_Strength(panel);
@@ -74,8 +74,21 @@ public class Player extends Entity{
         defence = getDefence();
     }
 
+    public void setDefaultPlayerPosition() {
+        worldX = panel.tileSize * 23;
+        worldY = panel.tileSize * 21;
+        direction = "down";
+    }
+
+    public void restoreDefaultHpAndMana() {
+        currentHP = maxHP;
+        currentMana = maxMana;
+        invincible = false;
+    }
+
     public void setItems() {
 
+        inventory.clear();
         inventory.add(currentWeapon);
         inventory.add(currentShield);
     }
@@ -158,6 +171,9 @@ public class Player extends Entity{
             int monsterIndex = panel.checker.checkEntity(this, panel.monster);
             contactMonster(monsterIndex);
 
+            //Check Interactive tile collision
+            int ITileIndex = panel.checker.checkEntity(this, panel.interactiveTile);
+
             //Check event
             panel.eventHandler.checkEvent();
 
@@ -213,6 +229,7 @@ public class Player extends Entity{
 
             panel.playSoundEffect(12);
         }
+
         if (invincible == true) {
             invincibleCounter++;
             if (invincibleCounter > 60) {
@@ -220,324 +237,50 @@ public class Player extends Entity{
                 invincibleCounter = 0;
             }
         }
+        if (currentHP > maxHP) {
+            currentHP = maxHP;
+        }
 
-        //HEAL HP, NEVER OPEN THIS
+        if (currentMana > maxMana) {
+            currentMana = maxMana;
+        }
+
+        if (currentHP <= 0) {
+            panel.playSoundEffect(14);
+            panel.gameState = panel.gameOverState;
+        }
+
+        //HEAL MANA
         if (currentMana < maxMana) {
             healManaCounter++;
-            int i = 5;
-            int a = 1;
-            int b = 2;
-            if (healManaCounter < i) {
+            int time = 5;
+            int defaultTime = 5;
+            int index = 1;
+            if (healManaCounter < time) {
                 manaImage = crystal.image2;
             }
-            if (healManaCounter >= i && healManaCounter < i * b) {
-                manaImage = setup("/object/crystal/manacrystal_blank1", panel.tileSize, panel.tileSize);
+            while (index <= 59) {
+                if (healManaCounter >= time && healManaCounter < time + defaultTime) {
+                    manaImage = setup("/object/crystal/manacrystal_blank" + index,
+                            panel.tileSize, panel.tileSize);
+                }
+                time += defaultTime;
+                index++;
             }
-            a++;
-            b++;
-            if (healManaCounter >= i * a && healManaCounter < i * b) {
-                manaImage = setup("/object/crystal/manacrystal_blank2", panel.tileSize, panel.tileSize);
-            }
-            a++;
-            b++;
-            if (healManaCounter >= i * a && healManaCounter < i * b) {
-                manaImage = setup("/object/crystal/manacrystal_blank3", panel.tileSize, panel.tileSize);
-            }
-            a++;
-            b++;
-            if (healManaCounter >= i * a && healManaCounter < i * b) {
-                manaImage = setup("/object/crystal/manacrystal_blank" + a, panel.tileSize, panel.tileSize);
-            }
-            a++;
-            b++;
-            if (healManaCounter >= i * a && healManaCounter < i * b) {
-                manaImage = setup("/object/crystal/manacrystal_blank" + a, panel.tileSize, panel.tileSize);
-            }
-            a++;
-            b++;
-            if (healManaCounter >= i * a && healManaCounter < i * b) {
-                manaImage = setup("/object/crystal/manacrystal_blank" + a, panel.tileSize, panel.tileSize);
-            }
-            a++;
-            b++;
-            if (healManaCounter >= i * a && healManaCounter < i * b) {
-                manaImage = setup("/object/crystal/manacrystal_blank" + a, panel.tileSize, panel.tileSize);
-            }
-            a++;
-            b++;
-            if (healManaCounter >= i * a && healManaCounter < i * b) {
-                manaImage = setup("/object/crystal/manacrystal_blank" + a, panel.tileSize, panel.tileSize);
-            }
-            a++;
-            b++;
-            if (healManaCounter >= i * a && healManaCounter < i * b) {
-                manaImage = setup("/object/crystal/manacrystal_blank" + a, panel.tileSize, panel.tileSize);
-            }
-            a++;
-            b++;
-            if (healManaCounter >= i * a && healManaCounter < i * b) {
-                manaImage = setup("/object/crystal/manacrystal_blank" + a, panel.tileSize, panel.tileSize);
-            }
-            a++;
-            b++;
-            if (healManaCounter >= i * a && healManaCounter < i * b) {
-                manaImage = setup("/object/crystal/manacrystal_blank" + a, panel.tileSize, panel.tileSize);
-            }
-            a++;
-            b++;
-            if (healManaCounter >= i * a && healManaCounter < i * b) {
-                manaImage = setup("/object/crystal/manacrystal_blank" + a, panel.tileSize, panel.tileSize);
-            }
-            a++;
-            b++;
-            if (healManaCounter >= i * a && healManaCounter < i * b) {
-                manaImage = setup("/object/crystal/manacrystal_blank" + a, panel.tileSize, panel.tileSize);
-            }
-            a++;
-            b++;
-            if (healManaCounter >= i * a && healManaCounter < i * b) {
-                manaImage = setup("/object/crystal/manacrystal_blank" + a, panel.tileSize, panel.tileSize);
-            }
-            a++;
-            b++;
-            if (healManaCounter >= i * a && healManaCounter < i * b) {
-                manaImage = setup("/object/crystal/manacrystal_blank" + a, panel.tileSize, panel.tileSize);
-            }
-            a++;
-            b++;
-            if (healManaCounter >= i * a && healManaCounter < i * b) {
-                manaImage = setup("/object/crystal/manacrystal_blank" + a, panel.tileSize, panel.tileSize);
-            }
-            a++;
-            b++;
-            if (healManaCounter >= i * a && healManaCounter < i * b) {
-                manaImage = setup("/object/crystal/manacrystal_blank" + a, panel.tileSize, panel.tileSize);
-            }
-            a++;
-            b++;
-            if (healManaCounter >= i * a && healManaCounter < i * b) {
-                manaImage = setup("/object/crystal/manacrystal_blank" + a, panel.tileSize, panel.tileSize);
-            }
-            a++;
-            b++;
-            if (healManaCounter >= i * a && healManaCounter < i * b) {
-                manaImage = setup("/object/crystal/manacrystal_blank" + a, panel.tileSize, panel.tileSize);
-            }
-            a++;
-            b++;
-            if (healManaCounter >= i * a && healManaCounter < i * b) {
-                manaImage = setup("/object/crystal/manacrystal_blank" + a, panel.tileSize, panel.tileSize);
-            }
-            a++;
-            b++;
-            if (healManaCounter >= i * a && healManaCounter < i * b) {
-                manaImage = setup("/object/crystal/manacrystal_blank" + a, panel.tileSize, panel.tileSize);
-            }
-            a++;
-            b++;
-            if (healManaCounter >= i * a && healManaCounter < i * b) {
-                manaImage = setup("/object/crystal/manacrystal_blank" + a, panel.tileSize, panel.tileSize);
-            }
-            a++;
-            b++;
-            if (healManaCounter >= i * a && healManaCounter < i * b) {
-                manaImage = setup("/object/crystal/manacrystal_blank" + a, panel.tileSize, panel.tileSize);
-            }
-            a++;
-            b++;
-            if (healManaCounter >= i * a && healManaCounter < i * b) {
-                manaImage = setup("/object/crystal/manacrystal_blank" + a, panel.tileSize, panel.tileSize);
-            }
-            a++;
-            b++;
-            if (healManaCounter >= i * a && healManaCounter < i * b) {
-                manaImage = setup("/object/crystal/manacrystal_blank" + a, panel.tileSize, panel.tileSize);
-            }
-            a++;
-            b++;
-            if (healManaCounter >= i * a && healManaCounter < i * b) {
-                manaImage = setup("/object/crystal/manacrystal_blank" + a, panel.tileSize, panel.tileSize);
-            }
-            a++;
-            b++;
-            if (healManaCounter >= i * a && healManaCounter < i * b) {
-                manaImage = setup("/object/crystal/manacrystal_blank" + a, panel.tileSize, panel.tileSize);
-            }
-            a++;
-            b++;
-            if (healManaCounter >= i * a && healManaCounter < i * b) {
-                manaImage = setup("/object/crystal/manacrystal_blank" + a, panel.tileSize, panel.tileSize);
-            }
-            a++;
-            b++;
-            if (healManaCounter >= i * a && healManaCounter < i * b) {
-                manaImage = setup("/object/crystal/manacrystal_blank" + a, panel.tileSize, panel.tileSize);
-            }
-            a++;
-            b++;
-            if (healManaCounter >= i * a && healManaCounter < i * b) {
-                manaImage = setup("/object/crystal/manacrystal_blank" + a, panel.tileSize, panel.tileSize);
-            }
-            a++;
-            b++;
-            if (healManaCounter >= i * a && healManaCounter < i * b) {
-                manaImage = setup("/object/crystal/manacrystal_blank" + a, panel.tileSize, panel.tileSize);
-            }
-            a++;
-            b++;
-            if (healManaCounter >= i * a && healManaCounter < i * b) {
-                manaImage = setup("/object/crystal/manacrystal_blank" + a, panel.tileSize, panel.tileSize);
-            }
-            a++;
-            b++;
-            if (healManaCounter >= i * a && healManaCounter < i * b) {
-                manaImage = setup("/object/crystal/manacrystal_blank" + a, panel.tileSize, panel.tileSize);
-            }
-            a++;
-            b++;
-            if (healManaCounter >= i * a && healManaCounter < i * b) {
-                manaImage = setup("/object/crystal/manacrystal_blank" + a, panel.tileSize, panel.tileSize);
-            }
-            a++;
-            b++;
-            if (healManaCounter >= i * a && healManaCounter < i * b) {
-                manaImage = setup("/object/crystal/manacrystal_blank" + a, panel.tileSize, panel.tileSize);
-            }
-            a++;
-            b++;
-            if (healManaCounter >= i * a && healManaCounter < i * b) {
-                manaImage = setup("/object/crystal/manacrystal_blank" + a, panel.tileSize, panel.tileSize);
-            }
-            a++;
-            b++;
-            if (healManaCounter >= i * a && healManaCounter < i * b) {
-                manaImage = setup("/object/crystal/manacrystal_blank" + a, panel.tileSize, panel.tileSize);
-            }
-            a++;
-            b++;
-            if (healManaCounter >= i * a && healManaCounter < i * b) {
-                manaImage = setup("/object/crystal/manacrystal_blank" + a, panel.tileSize, panel.tileSize);
-            }
-            a++;
-            b++;
-            if (healManaCounter >= i * a && healManaCounter < i * b) {
-                manaImage = setup("/object/crystal/manacrystal_blank" + a, panel.tileSize, panel.tileSize);
-            }
-            a++;
-            b++;
-            if (healManaCounter >= i * a && healManaCounter < i * b) {
-                manaImage = setup("/object/crystal/manacrystal_blank" + a, panel.tileSize, panel.tileSize);
-            }
-            a++;
-            b++;
-            if (healManaCounter >= i * a && healManaCounter < i * b) {
-                manaImage = setup("/object/crystal/manacrystal_blank" + a, panel.tileSize, panel.tileSize);
-            }
-            a++;
-            b++;
-            if (healManaCounter >= i * a && healManaCounter < i * b) {
-                manaImage = setup("/object/crystal/manacrystal_blank" + a, panel.tileSize, panel.tileSize);
-            }
-            a++;
-            b++;
-            if (healManaCounter >= i * a && healManaCounter < i * b) {
-                manaImage = setup("/object/crystal/manacrystal_blank" + a, panel.tileSize, panel.tileSize);
-            }
-            a++;
-            b++;
-            if (healManaCounter >= i * a && healManaCounter < i * b) {
-                manaImage = setup("/object/crystal/manacrystal_blank" + a, panel.tileSize, panel.tileSize);
-            }
-            a++;
-            b++;
-            if (healManaCounter >= i * a && healManaCounter < i * b) {
-                manaImage = setup("/object/crystal/manacrystal_blank" + a, panel.tileSize, panel.tileSize);
-            }
-            a++;
-            b++;
-            if (healManaCounter >= i * a && healManaCounter < i * b) {
-                manaImage = setup("/object/crystal/manacrystal_blank" + a, panel.tileSize, panel.tileSize);
-            }
-            a++;
-            b++;
-            if (healManaCounter >= i * a && healManaCounter < i * b) {
-                manaImage = setup("/object/crystal/manacrystal_blank" + a, panel.tileSize, panel.tileSize);
-            }
-            a++;
-            b++;
-            if (healManaCounter >= i * a && healManaCounter < i * b) {
-                manaImage = setup("/object/crystal/manacrystal_blank" + a, panel.tileSize, panel.tileSize);
-            }
-            a++;
-            b++;
-            if (healManaCounter >= i * a && healManaCounter < i * b) {
-                manaImage = setup("/object/crystal/manacrystal_blank" + a, panel.tileSize, panel.tileSize);
-            }
-            a++;
-            b++;
-            if (healManaCounter >= i * a && healManaCounter < i * b) {
-                manaImage = setup("/object/crystal/manacrystal_blank" + a, panel.tileSize, panel.tileSize);
-            }
-            a++;
-            b++;
-            if (healManaCounter >= i * a && healManaCounter < i * b) {
-                manaImage = setup("/object/crystal/manacrystal_blank" + a, panel.tileSize, panel.tileSize);
-            }
-            a++;
-            b++;
-            if (healManaCounter >= i * a && healManaCounter < i * b) {
-                manaImage = setup("/object/crystal/manacrystal_blank" + a, panel.tileSize, panel.tileSize);
-            }
-            a++;
-            b++;
-            if (healManaCounter >= i * a && healManaCounter < i * b) {
-                manaImage = setup("/object/crystal/manacrystal_blank" + a, panel.tileSize, panel.tileSize);
-            }
-            a++;
-            b++;
-            if (healManaCounter >= i * a && healManaCounter < i * b) {
-                manaImage = setup("/object/crystal/manacrystal_blank" + a, panel.tileSize, panel.tileSize);
-            }
-            a++;
-            b++;
-            if (healManaCounter >= i * a && healManaCounter < i * b) {
-                manaImage = setup("/object/crystal/manacrystal_blank" + a, panel.tileSize, panel.tileSize);
-            }
-            a++;
-            b++;
-            if (healManaCounter >= i * a && healManaCounter < i * b) {
-                manaImage = setup("/object/crystal/manacrystal_blank" + a, panel.tileSize, panel.tileSize);
-            }
-            a++;
-            b++;
-            if (healManaCounter >= i * a && healManaCounter < i * b) {
-                manaImage = setup("/object/crystal/manacrystal_blank" + a, panel.tileSize, panel.tileSize);
-            }
-            a++;
-            b++;
-            if (healManaCounter >= i * a && healManaCounter < i * b) {
-                manaImage = setup("/object/crystal/manacrystal_blank" + a, panel.tileSize, panel.tileSize);
-            }
-            a++;
-            b++;
-            if (healManaCounter >= i * a && healManaCounter < i * b) {
-                manaImage = setup("/object/crystal/manacrystal_blank" + a, panel.tileSize, panel.tileSize);
-            }
-            a++;
-            if (healManaCounter == i * a) {
+            if (healManaCounter == 300) {
                 manaImage = crystal.image2;
                 currentMana++;
                 healManaCounter = 0;
             }
         }
 
-        //HEAL MANA, NEVER OPEN THIS
+        //HEAL HP
         if (currentHP < maxHP) {
             healHPCounter++;
-            int i = 13;
-            int a = 1;
-            int b = 2;
-            if (healHPCounter < i) {
+            int time = 13;
+            int defaultTime = 13;
+            int index = 1;
+            if (healHPCounter < time) {
                 if (currentHP % 2 == 0) {
                     heartImage = heart.image3;
                 }
@@ -545,443 +288,17 @@ public class Player extends Entity{
                     heartImage = heart.image2;
                 }
             }
-            if (healHPCounter >= i && healHPCounter < i * b) {
-                if (currentHP % 2 == 0) {
-                    heartImage = setup("/object/Heart/heart_blank" + a, panel.tileSize, panel.tileSize);
-                }
-                if (currentHP % 2 != 0) {
-                    heartImage = setup("/object/Heart/heart_blank" + (a + 44), panel.tileSize, panel.tileSize);
-                }
-            }
-            a++;
-            b++;
-            if (healHPCounter >= i * a && healHPCounter < i * b) {
-                if (currentHP % 2 == 0) {
-                    heartImage = setup("/object/Heart/heart_blank" + a, panel.tileSize, panel.tileSize);
-                }
-                if (currentHP % 2 != 0) {
-                    heartImage = setup("/object/Heart/heart_blank" + (a + 44), panel.tileSize, panel.tileSize);
-                }
-            }
-            a++;
-            b++;
-            if (healHPCounter >= i * a && healHPCounter < i * b) {
-                if (currentHP % 2 == 0) {
-                    heartImage = setup("/object/Heart/heart_blank" + a, panel.tileSize, panel.tileSize);
-                }
-                if (currentHP % 2 != 0) {
-                    heartImage = setup("/object/Heart/heart_blank" + (a + 44), panel.tileSize, panel.tileSize);
-                }
-            }
-            a++;
-            b++;
-            if (healHPCounter >= i * a && healHPCounter < i * b) {
-                if (currentHP % 2 == 0) {
-                    heartImage = setup("/object/Heart/heart_blank" + a, panel.tileSize, panel.tileSize);
-                }
-                if (currentHP % 2 != 0) {
-                    heartImage = setup("/object/Heart/heart_blank" + (a + 44), panel.tileSize, panel.tileSize);
-                }
-            }
-            a++;
-            b++;
-            if (healHPCounter >= i * a && healHPCounter < i * b) {
-                if (currentHP % 2 == 0) {
-                    heartImage = setup("/object/Heart/heart_blank" + a, panel.tileSize, panel.tileSize);
-                }
-                if (currentHP % 2 != 0) {
-                    heartImage = setup("/object/Heart/heart_blank" + (a + 44), panel.tileSize, panel.tileSize);
-                }
-            }
-            a++;
-            b++;
-            if (healHPCounter >= i * a && healHPCounter < i * b) {
-                if (currentHP % 2 == 0) {
-                    heartImage = setup("/object/Heart/heart_blank" + a, panel.tileSize, panel.tileSize);
-                }
-                if (currentHP % 2 != 0) {
-                    heartImage = setup("/object/Heart/heart_blank" + (a + 44), panel.tileSize, panel.tileSize);
-                }
-            }
-            a++;
-            b++;
-            if (healHPCounter >= i * a && healHPCounter < i * b) {
-                if (currentHP % 2 == 0) {
-                    heartImage = setup("/object/Heart/heart_blank" + a, panel.tileSize, panel.tileSize);
-                }
-                if (currentHP % 2 != 0) {
-                    heartImage = setup("/object/Heart/heart_blank" + (a + 44), panel.tileSize, panel.tileSize);
-                }
-            }
-            a++;
-            b++;
-            if (healHPCounter >= i * a && healHPCounter < i * b) {
-                if (currentHP % 2 == 0) {
-                    heartImage = setup("/object/Heart/heart_blank" + a, panel.tileSize, panel.tileSize);
-                }
-                if (currentHP % 2 != 0) {
-                    heartImage = setup("/object/Heart/heart_blank" + (a + 44), panel.tileSize, panel.tileSize);
-                }
-            }
-            a++;
-            b++;
-            if (healHPCounter >= i * a && healHPCounter < i * b) {
-                if (currentHP % 2 == 0) {
-                    heartImage = setup("/object/Heart/heart_blank" + a, panel.tileSize, panel.tileSize);
-                }
-                if (currentHP % 2 != 0) {
-                    heartImage = setup("/object/Heart/heart_blank" + (a + 44), panel.tileSize, panel.tileSize);
-                }
-            }
-            a++;
-            b++;
-            if (healHPCounter >= i * a && healHPCounter < i * b) {
-                if (currentHP % 2 == 0) {
-                    heartImage = setup("/object/Heart/heart_blank" + a, panel.tileSize, panel.tileSize);
-                }
-                if (currentHP % 2 != 0) {
-                    heartImage = setup("/object/Heart/heart_blank" + (a + 44), panel.tileSize, panel.tileSize);
-                }
-            }
-            a++;
-            b++;
-            if (healHPCounter >= i * a && healHPCounter < i * b) {
-                if (currentHP % 2 == 0) {
-                    heartImage = setup("/object/Heart/heart_blank" + a, panel.tileSize, panel.tileSize);
-                }
-                if (currentHP % 2 != 0) {
-                    heartImage = setup("/object/Heart/heart_blank" + (a + 44), panel.tileSize, panel.tileSize);
-                }
-            }
-            a++;
-            b++;
-            if (healHPCounter >= i * a && healHPCounter < i * b) {
-                if (currentHP % 2 == 0) {
-                    heartImage = setup("/object/Heart/heart_blank" + a, panel.tileSize, panel.tileSize);
-                }
-                if (currentHP % 2 != 0) {
-                    heartImage = setup("/object/Heart/heart_blank" + (a + 44), panel.tileSize, panel.tileSize);
-                }
-            }
-            a++;
-            b++;
-            if (healHPCounter >= i * a && healHPCounter < i * b) {
-                if (currentHP % 2 == 0) {
-                    heartImage = setup("/object/Heart/heart_blank" + a, panel.tileSize, panel.tileSize);
-                }
-                if (currentHP % 2 != 0) {
-                    heartImage = setup("/object/Heart/heart_blank" + (a + 44), panel.tileSize, panel.tileSize);
-                }
-            }
-            a++;
-            b++;
-            if (healHPCounter >= i * a && healHPCounter < i * b) {
-                if (currentHP % 2 == 0) {
-                    heartImage = setup("/object/Heart/heart_blank" + a, panel.tileSize, panel.tileSize);
-                }
-                if (currentHP % 2 != 0) {
-                    heartImage = setup("/object/Heart/heart_blank" + (a + 44), panel.tileSize, panel.tileSize);
-                }
-            }
-            a++;
-            b++;
-            if (healHPCounter >= i * a && healHPCounter < i * b) {
-                if (currentHP % 2 == 0) {
-                    heartImage = setup("/object/Heart/heart_blank" + a, panel.tileSize, panel.tileSize);
-                }
-                if (currentHP % 2 != 0) {
-                    heartImage = setup("/object/Heart/heart_blank" + (a + 44), panel.tileSize, panel.tileSize);
-                }
-            }
-            a++;
-            b++;
-            if (healHPCounter >= i * a && healHPCounter < i * b) {
-                if (currentHP % 2 == 0) {
-                    heartImage = setup("/object/Heart/heart_blank" + a, panel.tileSize, panel.tileSize);
-                }
-                if (currentHP % 2 != 0) {
-                    heartImage = setup("/object/Heart/heart_blank" + (a + 44), panel.tileSize, panel.tileSize);
-                }
-            }
-            a++;
-            b++;
-            if (healHPCounter >= i * a && healHPCounter < i * b) {
-                if (currentHP % 2 == 0) {
-                    heartImage = setup("/object/Heart/heart_blank" + a, panel.tileSize, panel.tileSize);
-                }
-                if (currentHP % 2 != 0) {
-                    heartImage = setup("/object/Heart/heart_blank" + (a + 44), panel.tileSize, panel.tileSize);
-                }
-            }
-            a++;
-            b++;
-            if (healHPCounter >= i * a && healHPCounter < i * b) {
-                if (currentHP % 2 == 0) {
-                    heartImage = setup("/object/Heart/heart_blank" + a, panel.tileSize, panel.tileSize);
-                }
-                if (currentHP % 2 != 0) {
-                    heartImage = setup("/object/Heart/heart_blank" + (a + 44), panel.tileSize, panel.tileSize);
-                }
-            }
-            a++;
-            b++;
-            if (healHPCounter >= i * a && healHPCounter < i * b) {
-                if (currentHP % 2 == 0) {
-                    heartImage = setup("/object/Heart/heart_blank" + a, panel.tileSize, panel.tileSize);
-                }
-                if (currentHP % 2 != 0) {
-                    heartImage = setup("/object/Heart/heart_blank" + (a + 44), panel.tileSize, panel.tileSize);
-                }
-            }
-            a++;
-            b++;
-            if (healHPCounter >= i * a && healHPCounter < i * b) {
-                if (currentHP % 2 == 0) {
-                    heartImage = setup("/object/Heart/heart_blank" + a, panel.tileSize, panel.tileSize);
-                }
-                if (currentHP % 2 != 0) {
-                    heartImage = setup("/object/Heart/heart_blank" + (a + 44), panel.tileSize, panel.tileSize);
-                }
-            }
-            a++;
-            b++;
-            if (healHPCounter >= i * a && healHPCounter < i * b) {
-                if (currentHP % 2 == 0) {
-                    heartImage = setup("/object/Heart/heart_blank" + a, panel.tileSize, panel.tileSize);
-                }
-                if (currentHP % 2 != 0) {
-                    heartImage = setup("/object/Heart/heart_blank" + (a + 44), panel.tileSize, panel.tileSize);
-                }
-            }
-            a++;
-            b++;
-            if (healHPCounter >= i * a && healHPCounter < i * b) {
-                if (currentHP % 2 == 0) {
-                    heartImage = setup("/object/Heart/heart_blank" + a, panel.tileSize, panel.tileSize);
-                }
-                if (currentHP % 2 != 0) {
-                    heartImage = setup("/object/Heart/heart_blank" + (a + 44), panel.tileSize, panel.tileSize);
-                }
-            }
-            a++;
-            b++;
-            if (healHPCounter >= i * a && healHPCounter < i * b) {
-                if (currentHP % 2 == 0) {
-                    heartImage = setup("/object/Heart/heart_blank" + a, panel.tileSize, panel.tileSize);
-                }
-                if (currentHP % 2 != 0) {
-                    heartImage = setup("/object/Heart/heart_blank" + (a + 44), panel.tileSize, panel.tileSize);
-                }
-            }
-            a++;
-            b++;
-            if (healHPCounter >= i * a && healHPCounter < i * b) {
-                if (currentHP % 2 == 0) {
-                    heartImage = setup("/object/Heart/heart_blank" + a, panel.tileSize, panel.tileSize);
-                }
-                if (currentHP % 2 != 0) {
-                    heartImage = setup("/object/Heart/heart_blank" + (a + 44), panel.tileSize, panel.tileSize);
-                }
-            }
-            a++;
-            b++;
-            if (healHPCounter >= i * a && healHPCounter < i * b) {
-                if (currentHP % 2 == 0) {
-                    heartImage = setup("/object/Heart/heart_blank" + a, panel.tileSize, panel.tileSize);
-                }
-                if (currentHP % 2 != 0) {
-                    heartImage = setup("/object/Heart/heart_blank" + (a + 44), panel.tileSize, panel.tileSize);
-                }
-            }
-            a++;
-            b++;
-            if (healHPCounter >= i * a && healHPCounter < i * b) {
-                if (currentHP % 2 == 0) {
-                    heartImage = setup("/object/Heart/heart_blank" + a, panel.tileSize, panel.tileSize);
-                }
-                if (currentHP % 2 != 0) {
-                    heartImage = setup("/object/Heart/heart_blank" + (a + 44), panel.tileSize, panel.tileSize);
-                }
-            }
-            a++;
-            b++;
-            if (healHPCounter >= i * a && healHPCounter < i * b) {
-                if (currentHP % 2 == 0) {
-                    heartImage = setup("/object/Heart/heart_blank" + a, panel.tileSize, panel.tileSize);
-                }
-                if (currentHP % 2 != 0) {
-                    heartImage = setup("/object/Heart/heart_blank" + (a + 44), panel.tileSize, panel.tileSize);
-                }
-            }
-            a++;
-            b++;
-            if (healHPCounter >= i * a && healHPCounter < i * b) {
-                if (currentHP % 2 == 0) {
-                    heartImage = setup("/object/Heart/heart_blank" + a, panel.tileSize, panel.tileSize);
-                }
-                if (currentHP % 2 != 0) {
-                    heartImage = setup("/object/Heart/heart_blank" + (a + 44), panel.tileSize, panel.tileSize);
-                }
-            }
-            a++;
-            b++;
-            if (healHPCounter >= i * a && healHPCounter < i * b) {
-                if (currentHP % 2 == 0) {
-                    heartImage = setup("/object/Heart/heart_blank" + a, panel.tileSize, panel.tileSize);
-                }
-                if (currentHP % 2 != 0) {
-                    heartImage = setup("/object/Heart/heart_blank" + (a + 44), panel.tileSize, panel.tileSize);
-                }
-            }
-            a++;
-            b++;
-            if (healHPCounter >= i * a && healHPCounter < i * b) {
-                if (currentHP % 2 == 0) {
-                    heartImage = setup("/object/Heart/heart_blank" + a, panel.tileSize, panel.tileSize);
-                }
-                if (currentHP % 2 != 0) {
-                    heartImage = setup("/object/Heart/heart_blank" + (a + 44), panel.tileSize, panel.tileSize);
-                }
-            }
-            a++;
-            b++;
-            if (healHPCounter >= i * a && healHPCounter < i * b) {
-                if (currentHP % 2 == 0) {
-                    heartImage = setup("/object/Heart/heart_blank" + a, panel.tileSize, panel.tileSize);
-                }
-                if (currentHP % 2 != 0) {
-                    heartImage = setup("/object/Heart/heart_blank" + (a + 44), panel.tileSize, panel.tileSize);
-                }
-            }
-            a++;
-            b++;
-            if (healHPCounter >= i * a && healHPCounter < i * b) {
-                if (currentHP % 2 == 0) {
-                    heartImage = setup("/object/Heart/heart_blank" + a, panel.tileSize, panel.tileSize);
-                }
-                if (currentHP % 2 != 0) {
-                    heartImage = setup("/object/Heart/heart_blank" + (a + 44), panel.tileSize, panel.tileSize);
-                }
-            }
-            a++;
-            b++;
-            if (healHPCounter >= i * a && healHPCounter < i * b) {
-                if (currentHP % 2 == 0) {
-                    heartImage = setup("/object/Heart/heart_blank" + a, panel.tileSize, panel.tileSize);
-                }
-                if (currentHP % 2 != 0) {
-                    heartImage = setup("/object/Heart/heart_blank" + (a + 44), panel.tileSize, panel.tileSize);
-                }
-            }
-            a++;
-            b++;
-            if (healHPCounter >= i * a && healHPCounter < i * b) {
-                if (currentHP % 2 == 0) {
-                    heartImage = setup("/object/Heart/heart_blank" + a, panel.tileSize, panel.tileSize);
-                }
-                if (currentHP % 2 != 0) {
-                    heartImage = setup("/object/Heart/heart_blank" + (a + 44), panel.tileSize, panel.tileSize);
-                }
-            }
-            a++;
-            b++;
-            if (healHPCounter >= i * a && healHPCounter < i * b) {
-                if (currentHP % 2 == 0) {
-                    heartImage = setup("/object/Heart/heart_blank" + a, panel.tileSize, panel.tileSize);
-                }
-                if (currentHP % 2 != 0) {
-                    heartImage = setup("/object/Heart/heart_blank" + (a + 44), panel.tileSize, panel.tileSize);
-                }
-            }
-            a++;
-            b++;
-            if (healHPCounter >= i * a && healHPCounter < i * b) {
-                if (currentHP % 2 == 0) {
-                    heartImage = setup("/object/Heart/heart_blank" + a, panel.tileSize, panel.tileSize);
-                }
-                if (currentHP % 2 != 0) {
-                    heartImage = setup("/object/Heart/heart_blank" + (a + 44), panel.tileSize, panel.tileSize);
-                }
-            }
-            a++;
-            b++;
-            if (healHPCounter >= i * a && healHPCounter < i * b) {
-                if (currentHP % 2 == 0) {
-                    heartImage = setup("/object/Heart/heart_blank" + a, panel.tileSize, panel.tileSize);
-                }
-                if (currentHP % 2 != 0) {
-                    heartImage = setup("/object/Heart/heart_blank" + (a + 44), panel.tileSize, panel.tileSize);
-                }
-            }
-            a++;
-            b++;
-            if (healHPCounter >= i * a && healHPCounter < i * b) {
-                if (currentHP % 2 == 0) {
-                    heartImage = setup("/object/Heart/heart_blank" + a, panel.tileSize, panel.tileSize);
-                }
-                if (currentHP % 2 != 0) {
-                    heartImage = setup("/object/Heart/heart_blank" + (a + 44), panel.tileSize, panel.tileSize);
-                }
-            }
-            a++;
-            b++;
-            if (healHPCounter >= i * a && healHPCounter < i * b) {
-                if (currentHP % 2 == 0) {
-                    heartImage = setup("/object/Heart/heart_blank" + a, panel.tileSize, panel.tileSize);
-                }
-                if (currentHP % 2 != 0) {
-                    heartImage = setup("/object/Heart/heart_blank" + (a + 44), panel.tileSize, panel.tileSize);
-                }
-            }
-            a++;
-            b++;
-            if (healHPCounter >= i * a && healHPCounter < i * b) {
-                if (currentHP % 2 == 0) {
-                    heartImage = setup("/object/Heart/heart_blank" + a, panel.tileSize, panel.tileSize);
-                }
-                if (currentHP % 2 != 0) {
-                    heartImage = setup("/object/Heart/heart_blank" + (a + 44), panel.tileSize, panel.tileSize);
-                }
-            }
-            a++;
-            b++;
-            if (healHPCounter >= i * a && healHPCounter < i * b) {
-                if (currentHP % 2 == 0) {
-                    heartImage = setup("/object/Heart/heart_blank" + a, panel.tileSize, panel.tileSize);
-                }
-                if (currentHP % 2 != 0) {
-                    heartImage = setup("/object/Heart/heart_blank" + (a + 44), panel.tileSize, panel.tileSize);
-                }
-            }
-            a++;
-            b++;
-            if (healHPCounter >= i * a && healHPCounter < i * b) {
-                if (currentHP % 2 == 0) {
-                    heartImage = setup("/object/Heart/heart_blank" + a, panel.tileSize, panel.tileSize);
-                }
-                if (currentHP % 2 != 0) {
-                    heartImage = setup("/object/Heart/heart_blank" + (a + 44), panel.tileSize, panel.tileSize);
-                }
-            }
-            a++;
-            b++;
-            if (healHPCounter >= i * a && healHPCounter < i * b) {
-                if (currentHP % 2 == 0) {
-                    heartImage = setup("/object/Heart/heart_blank" + a, panel.tileSize, panel.tileSize);
-                }
-                if (currentHP % 2 != 0) {
-                    heartImage = setup("/object/Heart/heart_blank" + (a + 44), panel.tileSize, panel.tileSize);
-                }
-            }
-            a++;
-            b++;
-            if (healHPCounter >= i * a && healHPCounter < i * b) {
-                if (currentHP % 2 == 0) {
-                    heartImage = setup("/object/Heart/heart_blank" + a, panel.tileSize, panel.tileSize);
-                }
-                if (currentHP % 2 != 0) {
-                    heartImage = setup("/object/Heart/heart_blank" + (a + 44), panel.tileSize, panel.tileSize);
-                }
+            while (index <= 44) {
+                if (healHPCounter >= time && healHPCounter < time + defaultTime) {
+                    if (currentHP % 2 == 0) {
+                        heartImage = setup("/object/Heart/heart_blank" + index, panel.tileSize, panel.tileSize);
+                    }
+                    if (currentHP % 2 != 0) {
+                        heartImage = setup("/object/Heart/heart_blank" + (index + 44), panel.tileSize, panel.tileSize);
+                    }
+                }
+                time += defaultTime;
+                index++;
             }
             if (healHPCounter == 597) {
                 currentHP++;
@@ -1036,6 +353,10 @@ public class Player extends Entity{
             int monsterIndex = panel.checker.checkEntity(this, panel.monster);
             damageMonster(monsterIndex, attack);
 
+            //Cut Trees
+            int ITileIndex = panel.checker.checkEntity(this, panel.interactiveTile);
+            damageInteractiveTile(ITileIndex);
+
             //restore to original data
             worldX = currentWorldX;
             worldY = currentWorldY;
@@ -1049,31 +370,30 @@ public class Player extends Entity{
         }
     }
 
-    public void pickUpObject (int index) {
+    public void pickUpObject(int index) {
 
         String text;
 
         if (index != 999) {
             // PICK UP ITEMS ONLY
-            if (panel.object[index].type == typePickUpOnly) {
-
-                panel.object[index].use(this);
-                panel.object[index] = null;
+            if (panel.object[panel.currentMap][index].type == typePickUpOnly) {
+                panel.object[panel.currentMap][index].use(this);
+                panel.object[panel.currentMap][index] = null;
             }
 
             //INVENTORY ITEMS
             else {
                 if (inventory.size() != maxInventorySize) {
 
-                    inventory.add(panel.object[index]);
+                    inventory.add(panel.object[panel.currentMap][index]);
                     panel.playSoundEffect(1);
-                    text = "Got a " + panel.object[index].name + "!";
+                    text = "Got a " + panel.object[panel.currentMap][index].name + "!";
 
                 } else {
                     text = "You cannot carry any more!";
                 }
                 panel.ui.addMessage(text);
-                panel.object[index] = null;
+                panel.object[panel.currentMap][index] = null;
             }
         }
     }
@@ -1092,19 +412,23 @@ public class Player extends Entity{
 
     public void interactNPS ( int index) {
         if (index != 999) {
+            panel.ui.addHeadLines("press enter to open or close dialogue");
             if (panel.keyHandler.enterPressed == true) {
                 panel.gameState = panel.dialogueState;
-                panel.nps[index].speak();
+                panel.nps[panel.currentMap][index].speak();
             }
+        }
+        else {
+            panel.ui.canDelete = true;
         }
     }
 
     public void contactMonster ( int index) {
         if (index != 999) {
-            if (invincible == false && panel.monster[index].dying == false) {
+            if (invincible == false && panel.monster[panel.currentMap][index].dying == false) {
                 panel.playSoundEffect(6);
 
-                int damage = panel.monster[index].attack - defence;
+                int damage = panel.monster[panel.currentMap][index].attack - defence;
                 if (damage < 0) {
                     damage = 0;
                 }
@@ -1119,29 +443,49 @@ public class Player extends Entity{
 
         if (index != 999) {
 
-            if (panel.monster[index].invincible == false) {
+            if (panel.monster[panel.currentMap][index].invincible == false) {
 
                 panel.playSoundEffect(5);
 
-                int damage = attack - panel.monster[index].defence;
+                int damage = attack - panel.monster[panel.currentMap][index].defence;
                 if (damage < 0) {
                     damage = 0;
                 }
 
-                panel.monster[index].currentHP -= damage;
+                panel.monster[panel.currentMap][index].currentHP -= damage;
 
                 panel.ui.addMessage(damage + " damage!");
 
-                panel.monster[index].invincible = true;
-                panel.monster[index].damageReaction();
+                panel.monster[panel.currentMap][index].invincible = true;
 
-                if (panel.monster[index].currentHP <= 0) {
-                    panel.monster[index].dying = true;
-                    panel.ui.addMessage("killed the " + panel.monster[index].name + "!");
-                    exp += panel.monster[index].exp;
-                    panel.ui.addMessage("+" + panel.monster[index].exp + " exp!");
+                generateParticle(panel.monster[panel.currentMap][index], panel.monster[panel.currentMap][index]);
+
+                panel.monster[panel.currentMap][index].damageReaction();
+
+                if (panel.monster[panel.currentMap][index].currentHP <= 0) {
+                    panel.monster[panel.currentMap][index].dying = true;
+                    panel.ui.addMessage("killed the " + panel.monster[panel.currentMap][index].name + "!");
+                    exp += panel.monster[panel.currentMap][index].exp;
+                    panel.ui.addMessage("+" + panel.monster[panel.currentMap][index].exp + " exp!");
                     checkLevelUp();
                 }
+            }
+        }
+    }
+
+    public void damageInteractiveTile(int index) {
+        if (index != 999 && panel.interactiveTile[panel.currentMap][index].destructible
+            && panel.interactiveTile[panel.currentMap][index].isCorrectItem(this)
+            && !panel.interactiveTile[panel.currentMap][index].invincible) {
+
+            panel.interactiveTile[panel.currentMap][index].playSoundEffect();
+            panel.interactiveTile[panel.currentMap][index].currentHP--;
+            panel.interactiveTile[panel.currentMap][index].invincible = true;
+
+            generateParticle(panel.interactiveTile[panel.currentMap][index], panel.interactiveTile[panel.currentMap][index]);
+
+            if (panel.interactiveTile[panel.currentMap][index].currentHP == 0) {
+                panel.interactiveTile[panel.currentMap][index] = panel.interactiveTile[panel.currentMap][index].getDestroyedForm();
             }
         }
     }
@@ -1162,7 +506,7 @@ public class Player extends Entity{
 
     public void selectItem () {
 
-        int itemIndex = panel.ui.getItemIndexOnSlot();
+        int itemIndex = panel.ui.getItemIndexOnSlot(panel.ui.playerSlotCol, panel.ui.playerSlotRow);
 
         if (itemIndex < inventory.size()) {
 

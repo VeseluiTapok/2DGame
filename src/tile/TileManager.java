@@ -14,15 +14,17 @@ import java.io.InputStreamReader;
 public class TileManager {
     Panel panel;
     public Tile[] tile;
-    public int mapTaleNum[][];
+    public int mapTaleNum[][][];
+    public boolean drawPath = false;
 
     public TileManager(Panel panel) {
         this.panel = panel;
-        tile = new Tile[50];
-        mapTaleNum = new int[panel.maxWorldCol][panel.maxWorldRow];
+        tile = new Tile[60];
+        mapTaleNum = new int[panel.maxMap][panel.maxWorldCol][panel.maxWorldRow];
 
         getTileImage();
-        loadMaps("/maps/map01.txt");
+        loadMaps("/maps/map01.txt", 0);
+        loadMaps("/maps/interior01.txt", 1);
     }
     public void getTileImage() {
         //Forest
@@ -79,6 +81,21 @@ public class TileManager {
         setup(31, "water14", true);
         setup(32, "water15", true);
 
+        setup(45, "portal", false);
+        setup(46, "table01", true);
+        setup(47, "floor01", false);
+
+        setup(48, "lavaStone00", false);
+        setup(49, "lavaStone01", false);
+        setup(50, "lavaStone02", false);
+        setup(51, "blacktile", true);
+        setup(52, "lavaStone03", false);
+        setup(53, "lavaStone04", false);
+        setup(54, "lavaStone05", false);
+        setup(55, "lavaStone06", false);
+        setup(56, "lavaStone07", false);
+        setup(57, "lavaStone08", false);
+        setup(58, "lavaStone00", true);
     }
     public void setup(int index, String imageName, boolean collision) {
         UtilityTool utilityTool = new UtilityTool();
@@ -93,7 +110,7 @@ public class TileManager {
             e.printStackTrace();
         }
     }
-    public void loadMaps(String filePath) {
+    public void loadMaps(String filePath, int map) {
         try {
             InputStream is = getClass().getResourceAsStream(filePath);
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(is));
@@ -107,7 +124,7 @@ public class TileManager {
 
                     int num = Integer.parseInt(numbers[cols]);
 
-                    mapTaleNum[cols][rows] = num;
+                    mapTaleNum[map][cols][rows] = num;
                     cols++;
                 }
                 if (cols == panel.maxWorldCol) {
@@ -120,23 +137,23 @@ public class TileManager {
 
         }
     }
-    public void draw(Graphics2D graphics2) {
+    public void draw(Graphics2D graphics2D) {
         int worldCols = 0;
         int worldRows = 0;
 
         while (worldCols < panel.maxWorldCol && worldRows < panel.maxWorldRow) {
-            int tileNum = mapTaleNum[worldCols][worldRows];
+            int tileNum = mapTaleNum[panel.currentMap][worldCols][worldRows];
 
             int worldX = worldCols * panel.tileSize;
             int worldY = worldRows * panel.tileSize;
-            int screenX = worldX - panel.player.worldX +panel.player.screenX;
-            int screenY = worldY - panel.player.worldY +panel.player.screenY;
+            int screenX = worldX - panel.player.worldX + panel.player.screenX;
+            int screenY = worldY - panel.player.worldY + panel.player.screenY;
 
             if (worldX + panel.tileSize > panel.player.worldX - panel.player.screenX &&
-                worldX  - panel.tileSize < panel.player.worldX + panel.player.screenX &&
-                worldY  + panel.tileSize > panel.player.worldY - panel.player.screenY &&
-                worldY  - panel.tileSize < panel.player.worldY + panel.player.screenY) {
-                graphics2.drawImage(tile[tileNum].image, screenX, screenY, null);
+                worldX - panel.tileSize < panel.player.worldX + panel.player.screenX &&
+                worldY + panel.tileSize > panel.player.worldY - panel.player.screenY &&
+                worldY - panel.tileSize < panel.player.worldY + panel.player.screenY) {
+                graphics2D.drawImage(tile[tileNum].image, screenX, screenY, null);
             }
 
             worldCols++;

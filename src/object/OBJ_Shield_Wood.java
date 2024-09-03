@@ -13,5 +13,6 @@ public class OBJ_Shield_Wood extends Entity {
         down1 = setup("/object/shield_wood", panel.tileSize, panel.tileSize);
         defenceValue = 0;
         description = "[" + name + "]" + "\nMade by wood...";
+        price = 50;
     }
 }
